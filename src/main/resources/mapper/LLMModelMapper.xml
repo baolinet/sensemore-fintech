@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sensemore.loan.infra.mysql.repository.LLMModelRepository">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.sensemore.loan.infra.mysql.entity.LLMModel">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="key" property="key" jdbcType="VARCHAR"/>
+        <result column="value" property="value" jdbcType="LONGVARCHAR"/>
+        <result column="group" property="group" jdbcType="VARCHAR"/>
+        <result column="belong" property="belong" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础列 -->
+    <sql id="Base_Column_List">
+        id, `key`, `value`, `group`, belong, create_time, update_time
+    </sql>
+
+    <!-- 插入记录（动态插入，null值不插入） -->
+    <insert id="insert" parameterType="com.sensemore.loan.infra.mysql.entity.LLMModel" 
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO llm_model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="key != null">`key`,</if>
+            <if test="value != null">`value`,</if>
+            <if test="group != null">`group`,</if>
+            <if test="belong != null">belong,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="key != null">#{key,jdbcType=VARCHAR},</if>
+            <if test="value != null">#{value,jdbcType=LONGVARCHAR},</if>
+            <if test="group != null">#{group,jdbcType=VARCHAR},</if>
+            <if test="belong != null">#{belong,jdbcType=VARCHAR},</if>
+            <if test="createTime != null">#{createTime,jdbcType=TIMESTAMP},</if>
+            <if test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP},</if>
+        </trim>
+    </insert>
+
+    <!-- 选择性插入（null值不插入，带默认值处理） -->
+    <insert id="insertSelective" parameterType="com.sensemore.loan.infra.mysql.entity.LLMModel" 
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO llm_model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="key != null and key != ''">`key`,</if>
+            <if test="value != null">`value`,</if>
+            <if test="group != null and group != ''">`group`,</if>
+            <if test="belong != null and belong != ''">belong,</if>
+            create_time,
+            update_time
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="key != null and key != ''">#{key,jdbcType=VARCHAR},</if>
+            <if test="value != null">#{value,jdbcType=LONGVARCHAR},</if>
+            <if test="group != null and group != ''">#{group,jdbcType=VARCHAR},</if>
+            <if test="belong != null and belong != ''">#{belong,jdbcType=VARCHAR},</if>
+            <choose>
+                <when test="createTime != null">#{createTime,jdbcType=TIMESTAMP},</when>
+                <otherwise>NOW(),</otherwise>
+            </choose>
+            <choose>
+                <when test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP}</when>
+                <otherwise>NOW()</otherwise>
+            </choose>
+        </trim>
+    </insert>
+
+    <!-- 根据ID删除 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM llm_model WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <!-- 根据key删除 -->
+    <delete id="deleteByKey" parameterType="java.lang.String">
+        DELETE FROM llm_model WHERE `key` = #{key,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="deleteByIds">
+        DELETE FROM llm_model WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id,jdbcType=BIGINT}
+        </foreach>
+    </delete>
+
+    <!-- 更新记录 -->
+    <update id="updateById" parameterType="com.sensemore.loan.infra.mysql.entity.LLMModel">
+        UPDATE llm_model SET
+            `key` = #{key,jdbcType=VARCHAR},
+            `value` = #{value,jdbcType=LONGVARCHAR},
+            `group` = #{group,jdbcType=VARCHAR},
+            belong = #{belong,jdbcType=VARCHAR},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 动态更新（只更新非空字段） -->
+    <update id="updateByIdSelective" parameterType="com.sensemore.loan.infra.mysql.entity.LLMModel">
+        UPDATE llm_model
+        <set>
+            <if test="key != null and key != ''">`key` = #{key,jdbcType=VARCHAR},</if>
+            <if test="value != null">`value` = #{value,jdbcType=LONGVARCHAR},</if>
+            <if test="group != null and group != ''">`group` = #{group,jdbcType=VARCHAR},</if>
+            <if test="belong != null and belong != ''">belong = #{belong,jdbcType=VARCHAR},</if>
+            <if test="updateTime != null">update_time = #{updateTime,jdbcType=TIMESTAMP},</if>
+            <if test="updateTime == null">update_time = NOW(),</if>
+        </set>
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM llm_model
+        WHERE id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <!-- 根据key查询 -->
+    <select id="selectByKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM llm_model
+        WHERE `key` = #{key,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据分组查询 -->
+    <select id="selectByGroup" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM llm_model
+        WHERE `group` = #{group,jdbcType=VARCHAR}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据归属查询 -->
+    <select id="selectByBelong" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM llm_model
+        WHERE belong = #{belong,jdbcType=VARCHAR}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 查询所有记录 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM llm_model
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="selectByPage" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM llm_model
+        ORDER BY create_time DESC
+        LIMIT #{offset,jdbcType=INTEGER}, #{limit,jdbcType=INTEGER}
+    </select>
+
+    <!-- 统计总数 -->
+    <select id="count" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM llm_model
+    </select>
+
+    <!-- 条件查询 -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM llm_model
+        <where>
+            <if test="key != null and key != ''">
+                AND `key` LIKE CONCAT('%', #{key,jdbcType=VARCHAR}, '%')
+            </if>
+            <if test="group != null and group != ''">
+                AND `group` = #{group,jdbcType=VARCHAR}
+            </if>
+            <if test="belong != null and belong != ''">
+                AND belong = #{belong,jdbcType=VARCHAR}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>
