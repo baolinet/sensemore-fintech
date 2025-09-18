@@ -1,6 +1,6 @@
 package com.sensemore.loan.domain.pay_core;
 
-public class PayChannelDomain {
+public class ChannelDomain {
     public void aggreatePay() {
         // 聚合支付
     }
